@@ -55,11 +55,15 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id ] };
+  console.log(templateVars);
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  // const longURL = ...
+  console.log('I\'m in get :id');
+  console.log(urlDatabase);
+  console.log(req.params.id);
+  const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
 
@@ -68,9 +72,8 @@ app.listen(PORT, () => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  // console.log(req.body); // Log the POST request body to the console
   let randomString = generateRandomString();
   urlDatabase[randomString] = req.body['longURL'];
-  console.log(urlDatabase);
-  res.redirect(`/urls/:${randomString}`); // Replaced to redirect after post response
+  res.redirect(`/urls/${randomString}`); // Replaced to redirect after post response
 });
