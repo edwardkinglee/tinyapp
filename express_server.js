@@ -72,5 +72,5 @@ app.post("/urls", (req, res) => {
   let randomString = generateRandomString();
   urlDatabase[randomString] = req.body['longURL'];
   console.log(urlDatabase);
-  res.redirect('/urls/:id'); // Replaced to redirect after post response
+  res.redirect(`/urls/:${randomString}`); // Replaced to redirect after post response
 });
