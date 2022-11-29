@@ -92,7 +92,11 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post('/logins', (req, res) => {
-  // Cookies that have not been signed
   res.cookie('username',req.body['username']);
+  res.redirect('/urls');
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
   res.redirect('/urls');
 });
