@@ -33,10 +33,10 @@
         <% if(urls){ %>
           <% for (let id of urls) { %>
             <tr>
-              <td><%= Object.keys(id) %></td>
-              <td><%= Object.values(id) %></td>
-              <td><form method="POST" action="/urls/<%= id %>/edit"><button type="submit" class="btn btn-outline-primary">Edit</button></form>
-              <td><form method="POST" action="/urls/<%= id %>/delete">
+              <td><%= id.shortURL %></td>
+              <td><%= id.longURL %></td>
+              <td><form method="POST" action="/urls/<%= id.shortURL %>/edit"><button type="submit" class="btn btn-outline-primary">Edit</button></form>
+              <td><form method="POST" action="/urls/<%= id.shortURL %>/delete">
                 <button type="submit" class="btn btn-outline-danger">Delete</button></form><td>
             </tr>
           <% } %>

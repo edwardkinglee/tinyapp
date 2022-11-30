@@ -57,7 +57,7 @@ const hasUserId = (userId) => {
   const urlArray = [];
   for (let element in urlDatabase) {
     if (urlDatabase[element]['userID'] === userId) {
-      urlArray.push({[element]: urlDatabase[element]['longURL']});
+      urlArray.push({shortURL:[element] ,longURL: urlDatabase[element]['longURL']});
     }
   }
   //have it return null instead of empty array if user doesn't exist
@@ -177,7 +177,7 @@ app.post("/urls/:id/edit", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body['longURL'];
+  urlDatabase[req.params.id]['longURL'] = req.body['longURL'];
   res.redirect(`/urls`);
 });
 
