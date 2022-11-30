@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require('cookie-parser');
+const { restart } = require("nodemon");
 const app = express();
 const PORT = 8080; // default port 8080
 
@@ -37,6 +38,15 @@ const users = {
   },
 };
 
+const userLookup = (email) => {
+  for (let obj in users) {
+    if (users[obj]['email'] === email) {
+      return obj;
+    }
+  }
+  return null;
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -48,15 +58,6 @@ app.get("/urls.json", (req, res) => {
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
-
-app.get("/set", (req, res) => {
-  const a = 1;
-  res.send(`a = ${a}`);
-});
-
-// app.get("/fetch", (req, res) => {
-//   res.send(`a = ${a}`);
-// });
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
@@ -121,6 +122,15 @@ app.post('/logout', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, password } = req.body;
+  const user = userLookup(email);
+  
+  if (email === '' || password === '') {
+    return res.status(400).send('Email address or password can\'t be empty strings');
+  }
+  if (user) {
+    return res.status(400).send('Email address already in use');
+  }
+
   const userId = generateRandomString();
   users[userId] = {
     id: userId,
