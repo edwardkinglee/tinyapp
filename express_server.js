@@ -53,6 +53,16 @@ const userLookup = (email) => {
   return null;
 };
 
+const hasUserId = (userId) => {
+  const urlArray = [];
+  for (let element in urlDatabase) {
+    if (urlDatabase[element]['userID'] === userId) {
+      urlArray.push({[element]: urlDatabase[element]['longURL']});
+    }
+  }
+  return urlArray;
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -69,7 +79,8 @@ app.get("/urls", (req, res) => {
   if (!req.cookies["user_id"]) {
     return res.redirect('/login');
   }
-  const templateVars = { urls: urlDatabase[req.cookies["user_id"]], user: users[req.cookies["user_id"]] };
+  console.log(hasUserId(req.cookies["user_id"]));
+  const templateVars = { urls: hasUserId(req.cookies["user_id"]), user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
 
@@ -123,7 +134,6 @@ app.post("/urls", (req, res) => {
     longURL: req.body['longURL'],
     userID: req.cookies["user_id"]
   };
-  console.log(urlDatabase);
   res.redirect(`/urls/${randomString}`); // Replaced to redirect after post response
 });
 
