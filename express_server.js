@@ -21,8 +21,14 @@ function generateRandomString() {
 }
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {
@@ -63,7 +69,7 @@ app.get("/urls", (req, res) => {
   if (!req.cookies["user_id"]) {
     return res.redirect('/login');
   }
-  const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
+  const templateVars = { urls: urlDatabase[req.cookies["user_id"]], user: users[req.cookies["user_id"]] };
   res.render("urls_index", templateVars);
 });
 
@@ -84,13 +90,12 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[req.cookies["user_id"]] };
-  console.log(templateVars);
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]['longURL'], user: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id]['longURL'];
   if (!longURL) {
     return res.status(400).send('Short URL id doesn\'t exist');
   }
@@ -114,7 +119,11 @@ app.post("/urls", (req, res) => {
     return res.status(400).send('Must be logged in to shorten URLs');
   }
   let randomString = generateRandomString();
-  urlDatabase[randomString] = req.body['longURL'];
+  urlDatabase[randomString] = {
+    longURL: req.body['longURL'],
+    userID: req.cookies["user_id"]
+  };
+  console.log(urlDatabase);
   res.redirect(`/urls/${randomString}`); // Replaced to redirect after post response
 });
 
@@ -166,10 +175,9 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const user = userLookup(email);
-  console.log(user);
   if (user && users[user]['password'] === password) {
     res.cookie('user_id', user);
-    res.redirect('/urls');
+    return res.redirect('/urls');
   }
   if (user && users[user]['password'] !== password) {
     return res.status(403).send('Incorrect password');
