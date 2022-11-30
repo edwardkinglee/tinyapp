@@ -122,7 +122,7 @@ app.post('/logins', (req, res) => {
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 app.post('/register', (req, res) => {
@@ -154,5 +154,8 @@ app.post('/login', (req, res) => {
     res.cookie('user_id', user);
     res.redirect('/urls');
   }
-  res.redirect('/login');
+  if (user && users[user]['password'] !== password) {
+    return res.status(403).send('Incorrect password');
+  }
+  return res.status(403).send('Email can\'t be found');
 });
