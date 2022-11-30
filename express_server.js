@@ -82,12 +82,15 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
-  // const userEmail = users[userId]['email'];
-  
-  if (!userId) {
+  let userEmail = '';
+  if (users[userId]) {
+    userEmail = users[userId]['email'];
+  }
+  //if userId doesn't exist or there is no entry in user database
+  if (!userId || !userLookup(userEmail)) {
     return res.redirect('/login');
   }
- console.log(hasUserId(userId));
+ 
   const templateVars = { urls: hasUserId(userId), user: users[userId] };
   res.render("urls_index", templateVars);
 });
