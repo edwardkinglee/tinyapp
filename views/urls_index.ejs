@@ -30,6 +30,7 @@
           </tr>
         </thead>
         <tbody>
+        <% if(urls){ %>
           <% for (let id of urls) { %>
             <tr>
               <td><%= Object.keys(id) %></td>
@@ -39,6 +40,7 @@
                 <button type="submit" class="btn btn-outline-danger">Delete</button></form><td>
             </tr>
           <% } %>
+        <% } %>
         </tbody>
       </table>
     </main>

@@ -60,6 +60,11 @@ const hasUserId = (userId) => {
       urlArray.push({[element]: urlDatabase[element]['longURL']});
     }
   }
+  //have it return null instead of empty array if user doesn't exist
+  if (urlArray.length === 0) {
+    return null;
+  }
+
   return urlArray;
 };
 
@@ -76,24 +81,40 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  if (!req.cookies["user_id"]) {
+  const userId = req.cookies["user_id"];
+  // const userEmail = users[userId]['email'];
+  
+  if (!userId) {
     return res.redirect('/login');
   }
-  console.log(hasUserId(req.cookies["user_id"]));
-  const templateVars = { urls: hasUserId(req.cookies["user_id"]), user: users[req.cookies["user_id"]] };
+ console.log(hasUserId(userId));
+  const templateVars = { urls: hasUserId(userId), user: users[userId] };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies["user_id"]) {
+  const userId = req.cookies["user_id"];
+  let userEmail = '';
+  if (users[userId]) {
+    userEmail = users[userId]['email'];
+  }
+  //if userId doesn't exist or there is no entry in user database
+  if (!userId || !userLookup(userEmail)) {
     return res.redirect('/login');
   }
-  const templateVars = { user: users[req.cookies["user_id"]] };
+
+  const templateVars = { user: users[userId] };
   res.render("urls_new", templateVars);
 });
 
 app.get("/register", (req, res) => {
-  if (req.cookies["user_id"]) {
+  const userId = req.cookies["user_id"];
+  let userEmail = '';
+  if (users[userId]) {
+    userEmail = users[userId]['email'];
+  }
+  //if userId exist and userId is in the database
+  if (userId && userLookup(userEmail)) {
     return res.redirect('/urls');
   }
   const templateVars = { user: users[req.cookies["user_id"]] };
@@ -114,7 +135,13 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  if (req.cookies["user_id"]) {
+  const userId = req.cookies["user_id"];
+  let userEmail = '';
+  if (users[userId]) {
+    userEmail = users[userId]['email'];
+  }
+ 
+  if (userId && userLookup(userEmail)) {
     return res.redirect('/urls');
   }
   const templateVars = { user: users[req.cookies["user_id"]] };
