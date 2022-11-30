@@ -125,6 +125,21 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  const userId = req.cookies["user_id"];
+  let userEmail = '';
+  if (users[userId]) {
+    userEmail = users[userId]['email'];
+  }
+  //if userId doesn't exist or there is no entry in user database
+  if (!userId || !userLookup(userEmail)) {
+    return res.status(400).send('You must be logged in');
+  }
+
+  const databaseId = urlDatabase[req.params.id]['userID'];
+  if (databaseId !== userId) {
+    return res.status(400).send('You must be logged as a authorized user');
+  }
+
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]['longURL'], user: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
 });
@@ -138,6 +153,7 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get('/login', (req, res) => {
+  console.log(urlDatabase);
   const userId = req.cookies["user_id"];
   let userEmail = '';
   if (users[userId]) {
@@ -168,11 +184,23 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const databaseId = urlDatabase[req.params.id]['userID'];
+  if (databaseId !== userId) {
+    return res.status(400).send('You must be logged as a authorized user');
+  }
+
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
 });
 
 app.post("/urls/:id/edit", (req, res) => {
+  const userId = req.cookies["user_id"];
+  const databaseId = urlDatabase[req.params.id]['userID'];
+  if (databaseId !== userId) {
+    return res.status(400).send('You must be logged as a authorized user');
+  }
+
   res.redirect(`/urls/${req.params.id}`);
 });
 
