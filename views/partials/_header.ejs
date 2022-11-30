@@ -19,8 +19,21 @@
       </div>
     </div>
     <div>
-      
-        <% if(user){ %>
+      <% if(user){ %>
+          <form method="POST" action="/logout">
+          <label>Logged in as: <%= user['email'] %></label>
+          <button type="submit" class="btn btn-outline-dark">Logout</button>
+          </form>
+      <% } else{ %>
+          <a href="/register">
+          <button type="submit" class="btn btn-primary mr-3">Register</button>
+          </a>
+   
+         <a href="/login">
+        <button type="submit" class="btn btn-primary mr-3">  Login  </button>  
+        </a>
+     <% } %>
+        <!-- <% if(user){ %>
           <form method="POST" action="/logout">
           <label>Logged in as: <%= user['email'] %></label>
           <button type="submit" class="btn btn-outline-dark">Logout</button>
@@ -30,7 +43,7 @@
         <input type="text" name="username" placeholder="Username">
         <button type="submit" class="btn btn-outline-dark">Login</button>
       </form>
-     <% } %>
+     <% } %> -->
     </div>
   </nav>
 </header>

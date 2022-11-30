@@ -85,6 +85,11 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get('/login', (req, res) => {
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render('urls_login', templateVars);
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -139,4 +144,8 @@ app.post('/register', (req, res) => {
   };
   res.cookie('user_id', userId);
   res.redirect('/urls');
+});
+
+app.post('/login', (res, req) => {
+  
 });
