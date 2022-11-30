@@ -165,7 +165,7 @@ app.post('/register', (req, res) => {
   const { email, password } = req.body;
   const user = userLookup(email);
   
-  if (email === '' || password === '') {
+  if (!email || !password) {
     return res.status(400).send('Email address or password can\'t be empty strings');
   }
   if (user) {
