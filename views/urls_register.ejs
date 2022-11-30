@@ -23,8 +23,9 @@
 
     <main style="margin: 1em;">
       <h3>Register a new user</h3>
-      <form class="form-inline" action="/register" method="POST">
+      
         <div class="form-group mb-2">
+          <form class="form-inline" action="/register" method="POST"></form>
           <label for="email">Enter a email address:</label>
           <input
             class="form-control"
@@ -32,7 +33,7 @@
             name="email"
             placeholder="example@email.com"
             style="width: 300px; margin: 1em"
-          /><br>
+          />
           <label for="email">Enter a password:</label>
           <input
             class="form-control"
@@ -41,8 +42,9 @@
             style="width: 300px; margin: 1em"
           />
           <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
         </div>
-      </form>
+      
     </main>
     <!-- Bootstrap JS -->
     <script

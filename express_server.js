@@ -116,12 +116,12 @@ app.post("/urls/:id", (req, res) => {
 });
 
 app.post('/logins', (req, res) => {
-  res.cookie('username',req.body['username']);
+  res.cookie('user_id',req.body['user_id']);
   res.redirect('/urls');
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 
@@ -146,6 +146,13 @@ app.post('/register', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post('/login', (res, req) => {
-  
+app.post('/login', (req, res) => {
+  const { email, password } = req.body;
+  const user = userLookup(email);
+  console.log(user);
+  if (user && users[user]['password'] === password) {
+    res.cookie('user_id', user);
+    res.redirect('/urls');
+  }
+  res.redirect('/login');
 });
