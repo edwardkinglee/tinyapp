@@ -9,15 +9,6 @@ const bodyParser = require('body-parser');
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
-// app.use(cookieSession({
-//   name: 'session',
-//   keys: ['test'],
-
-//   // Cookie Options
-//   maxAge: 24 * 60 * 60 * 1000 // 24 hours
-// }));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieSession({
   name: 'session',
@@ -60,10 +51,10 @@ const users = {
   },
 };
 
-const userLookup = (email) => {
-  for (let key in users) {
-    if (users[key]['email'] === email) {
-      return key;
+const getUserByEmail = (email, database) => {
+  for (let userId in database) {
+    if (database[userId]['email'] === email) {
+      return userId;
     }
   }
   return null;
@@ -103,11 +94,9 @@ app.get("/urls", (req, res) => {
   if (users[userId]) {
     userEmail = users[userId]['email'];
   }
-  console.log('Session userId in urls', req.session.user);
-  console.log('userLookup in urls',userLookup(userEmail));
+  
   //if userId doesn't exist or there is no entry in user database
-  if (!userId || !userLookup(userEmail)) {
-    console.log('being redirected');
+  if (!userId || !getUserByEmail(userEmail, users)) {
     return res.redirect('/login');
   }
  
@@ -122,7 +111,7 @@ app.get("/urls/new", (req, res) => {
     userEmail = users[userId]['email'];
   }
   //if userId doesn't exist or there is no entry in user database
-  if (!userId || !userLookup(userEmail)) {
+  if (!userId || !getUserByEmail(userEmail, users)) {
     return res.redirect('/login');
   }
 
@@ -137,7 +126,7 @@ app.get("/register", (req, res) => {
     userEmail = users[userId]['email'];
   }
   //if userId exist and userId is in the database
-  if (userId && userLookup(userEmail)) {
+  if (userId && getUserByEmail(userEmail, users)) {
     return res.redirect('/urls');
   }
   const templateVars = { user: users[req.session.user_id] };
@@ -151,7 +140,7 @@ app.get("/urls/:id", (req, res) => {
     userEmail = users[userId]['email'];
   }
   //if userId doesn't exist or there is no entry in user database
-  if (!userId || !userLookup(userEmail)) {
+  if (!userId || !getUserByEmail(userEmail, users)) {
     return res.status(400).send('You must be logged in');
   }
 
@@ -173,16 +162,14 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  console.log(users);
-  console.log('session id in login',req.session.user_id);
- 
+  
   const userId = req.session.user_id;
   let userEmail = '';
   if (users[userId]) {
     userEmail = users[userId]['email'];
   }
  
-  if (userId && userLookup(userEmail)) {
+  if (userId && getUserByEmail(userEmail, users)) {
     return res.redirect('/urls');
   }
   const templateVars = { user: users[req.session.user_id] };
@@ -243,7 +230,7 @@ app.post('/logout', (req, res) => {
 
 app.post('/register', (req, res) => {
   const { email, password } = req.body;
-  const user = userLookup(email);
+  const user = getUserByEmail(email, users);
   
   if (!email || !password) {
     return res.status(400).send('Email address or password can\'t be empty strings');
@@ -265,7 +252,7 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  const userId = userLookup(email);
+  const userId = getUserByEmail(email, users);
   
   if (userId && bcrypt.compareSync(password, users[userId].password)) {
     req.session.user_id = userId;
