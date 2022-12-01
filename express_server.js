@@ -173,39 +173,6 @@ app.post("/urls/:id", (req, res) => {
   res.redirect(`/urls`);
 });
 
-app.post('/logins', (req, res) => {
-  req.session.user_id = req.body['user_id'];
-  res.redirect('/urls');
-});
-
-app.post('/logout', (req, res) => {
-  req.session = null;
-  res.redirect('/login');
-});
-
-app.post('/register', (req, res) => {
-  const { email, password } = req.body;
-  const user = getUserByEmail(email, users);
-  
-  if (!email || !password) {
-    return res.status(400).send('Email address or password can\'t be empty strings');
-  }
-
-  if (user) {
-    return res.status(400).send('Email address already in use');
-  }
-
-  const hashedPassword = bcrypt.hashSync(password, 10);
-  const userId = generateRandomString();
-  users[userId] = {
-    id: userId,
-    email,
-    password: hashedPassword
-  };
-  req.session.user_id = userId;
-  res.redirect('/urls');
-});
-
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const userId = getUserByEmail(email, users);
@@ -220,4 +187,33 @@ app.post('/login', (req, res) => {
   }
 
   return res.status(403).send('Email can\'t be found');
+});
+
+app.post('/logout', (req, res) => {
+  req.session = null;
+  res.redirect('/login');
+});
+
+app.post('/register', (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).send('Email address or password can\'t be empty strings');
+  }
+
+  const user = getUserByEmail(email, users);
+
+  if (user) {
+    return res.status(400).send('Email address already in use');
+  }
+
+  const hashedPassword = bcrypt.hashSync(password, 10);
+  const userId = generateRandomString();
+  users[userId] = {
+    id: userId,
+    email,
+    password: hashedPassword
+  };
+  req.session.user_id = userId;
+  res.redirect('/urls');
 });
