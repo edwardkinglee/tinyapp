@@ -22,16 +22,12 @@ const urlDatabase = {};
 
 const users = {};
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
+app.listen(PORT, () => {
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
+  res.send("Server is running!");
 });
 
 app.get("/urls", (req, res) => {
@@ -46,7 +42,7 @@ app.get("/urls", (req, res) => {
   if (!userId || !getUserByEmail(userEmail, users)) {
     return res.redirect('/login');
   }
- 
+  
   const templateVars = { urls: urlsForUser(userId, urlDatabase), user: users[userId] };
   res.render("urls_index", templateVars);
 });
@@ -128,17 +124,14 @@ app.get('/login', (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-app.listen(PORT, () => {
-  console.log(`TinyApp listening on port ${PORT}!`);
-});
-
 app.post("/urls", (req, res) => {
+  
+  let randomString = generateRandomString();
 
   if (!req.session.user_id) {
     return res.status(400).send('Must be logged in to shorten URLs');
   }
 
-  let randomString = generateRandomString();
   urlDatabase[randomString] = {
     longURL: req.body['longURL'],
     userID: req.session["user_id"]
@@ -149,6 +142,7 @@ app.post("/urls", (req, res) => {
 app.delete('/urls/:id', (req, res) => {
   const userId = req.session.user_id;
   const databaseId = urlDatabase[req.params.id]['userID'];
+  
   if (databaseId !== userId) {
     return res.status(400).send('You must be logged as a authorized user');
   }

@@ -21,7 +21,7 @@ const getUserByEmail = (email, database) => {
   }
   return undefined;
 };
-
+//returns list of urls for user
 const urlsForUser = (id, urlDatabase) => {
   const urlArray = [];
   
