@@ -18,17 +18,19 @@ app.use(cookieSession({
 }));
 app.use(methodOverride('_method'));
 
-// eslint-disable-next-line func-style
-function generateRandomString() {
+
+const generateRandomString = () => {
   const length = 6;
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
   const charactersLength = characters.length;
+
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
+
   return result;
-}
+};
 
 const urlDatabase = {
   b6UTxQ: {
@@ -61,7 +63,7 @@ const urlsForUser = (id) => {
       urlArray.push({shortURL:[element] ,longURL: urlDatabase[element]['longURL']});
     }
   }
-  //have it return null instead of empty array if user doesn't exist
+  
   if (urlArray.length === 0) {
     return null;
   }
@@ -158,6 +160,7 @@ app.get('/login', (req, res) => {
   
   const userId = req.session.user_id;
   let userEmail = '';
+
   if (users[userId]) {
     userEmail = users[userId]['email'];
   }
@@ -165,6 +168,7 @@ app.get('/login', (req, res) => {
   if (userId && getUserByEmail(userEmail, users)) {
     return res.redirect('/urls');
   }
+
   const templateVars = { user: users[req.session.user_id] };
   res.render('urls_login', templateVars);
 });
@@ -174,15 +178,17 @@ app.listen(PORT, () => {
 });
 
 app.post("/urls", (req, res) => {
+
   if (!req.session.user_id) {
     return res.status(400).send('Must be logged in to shorten URLs');
   }
+
   let randomString = generateRandomString();
   urlDatabase[randomString] = {
     longURL: req.body['longURL'],
     userID: req.session["user_id"]
   };
-  res.redirect(`/urls/${randomString}`); // Replaced to redirect after post response
+  res.redirect(`/urls/${randomString}`);
 });
 
 app.delete('/urls/:id', (req, res) => {
@@ -196,19 +202,10 @@ app.delete('/urls/:id', (req, res) => {
   res.redirect('/urls');
 });
 
-// app.post("/urls/:id/edit", (req, res) => {
-//   const userId = req.session.user_id;
-//   const databaseId = urlDatabase[req.params.id]['userID'];
-//   if (databaseId !== userId) {
-//     return res.status(400).send('You must be logged as a authorized user');
-//   }
-
-//   res.redirect(`/urls/${req.params.id}`);
-// });
-
 app.put('/urls/:id', (req, res) => {
   const userId = req.session.user_id;
   const databaseId = urlDatabase[req.params.id]['userID'];
+
   if (databaseId !== userId) {
     return res.status(400).send('You must be logged as a authorized user');
   }
@@ -238,11 +235,12 @@ app.post('/register', (req, res) => {
   if (!email || !password) {
     return res.status(400).send('Email address or password can\'t be empty strings');
   }
+
   if (user) {
     return res.status(400).send('Email address already in use');
   }
-  const hashedPassword = bcrypt.hashSync(password, 10);
 
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const userId = generateRandomString();
   users[userId] = {
     id: userId,
@@ -261,8 +259,10 @@ app.post('/login', (req, res) => {
     req.session.user_id = userId.id;
     return res.redirect('/urls');
   }
+  
   if (userId && !bcrypt.compareSync(password, userId.password)) {
     return res.status(403).send('Incorrect password');
   }
+
   return res.status(403).send('Email can\'t be found');
 });
