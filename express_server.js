@@ -170,7 +170,7 @@ app.get('/login', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`TinyURL listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
 
 app.post("/urls", (req, res) => {
@@ -196,7 +196,17 @@ app.delete('/urls/:id', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post("/urls/:id/edit", (req, res) => {
+// app.post("/urls/:id/edit", (req, res) => {
+//   const userId = req.session.user_id;
+//   const databaseId = urlDatabase[req.params.id]['userID'];
+//   if (databaseId !== userId) {
+//     return res.status(400).send('You must be logged as a authorized user');
+//   }
+
+//   res.redirect(`/urls/${req.params.id}`);
+// });
+
+app.put('/urls/:id', (req, res) => {
   const userId = req.session.user_id;
   const databaseId = urlDatabase[req.params.id]['userID'];
   if (databaseId !== userId) {
