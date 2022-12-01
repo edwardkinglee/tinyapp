@@ -24,6 +24,7 @@ const getUserByEmail = (email, database) => {
 
 const urlsForUser = (id, urlDatabase) => {
   const urlArray = [];
+  
   for (let element in urlDatabase) {
     if (urlDatabase[element]['userID'] === id) {
       urlArray.push({shortURL:[element] ,longURL: urlDatabase[element]['longURL']});
