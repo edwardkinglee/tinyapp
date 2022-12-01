@@ -148,10 +148,13 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id]['longURL'];
+  let longURL = urlDatabase[req.params.id];
+
   if (!longURL) {
     return res.status(400).send('Short URL id doesn\'t exist');
   }
+
+  longURL = urlDatabase[req.params.id]['longURL'];
   res.redirect(longURL);
 });
 
