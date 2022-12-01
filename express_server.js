@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const { restart } = require("nodemon");
 const app = express();
 const PORT = 8080; // default port 8080
+const bcrypt = require("bcryptjs");
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -45,9 +46,9 @@ const users = {
 };
 
 const userLookup = (email) => {
-  for (let obj in users) {
-    if (users[obj]['email'] === email) {
-      return obj;
+  for (let key in users) {
+    if (users[key]['email'] === email) {
+      return key;
     }
   }
   return null;
@@ -229,12 +230,13 @@ app.post('/register', (req, res) => {
   if (user) {
     return res.status(400).send('Email address already in use');
   }
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   const userId = generateRandomString();
   users[userId] = {
     id: userId,
     email,
-    password
+    password: hashedPassword
   };
   res.cookie('user_id', userId);
   res.redirect('/urls');
@@ -242,12 +244,13 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
-  const user = userLookup(email);
-  if (user && users[user]['password'] === password) {
-    res.cookie('user_id', user);
+  const userId = userLookup(email);
+  console.log('user in login ', userId);
+  if (userId && bcrypt.compareSync(password, users[userId].password)) {
+    res.cookie('user_id', userId);
     return res.redirect('/urls');
   }
-  if (user && users[user]['password'] !== password) {
+  if (userId && !bcrypt.compareSync(password, users[userId].password)) {
     return res.status(403).send('Incorrect password');
   }
   return res.status(403).send('Email can\'t be found');
