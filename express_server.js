@@ -7,6 +7,7 @@ const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser');
 const getUserByEmail = require('./helpers');
+const methodOverride = require('method-override');
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -15,6 +16,7 @@ app.use(cookieSession({
   name: 'session',
   keys: ['secret', 'rotation']
 }));
+app.use(methodOverride('_method'));
 
 // eslint-disable-next-line func-style
 function generateRandomString() {
@@ -69,10 +71,6 @@ const urlsForUser = (id) => {
 
 app.get("/", (req, res) => {
   res.send("Hello!");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
 });
 
 app.get("/hello", (req, res) => {
@@ -172,7 +170,7 @@ app.get('/login', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyURL listening on port ${PORT}!`);
 });
 
 app.post("/urls", (req, res) => {
@@ -187,7 +185,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${randomString}`); // Replaced to redirect after post response
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete('/urls/:id', (req, res) => {
   const userId = req.session.user_id;
   const databaseId = urlDatabase[req.params.id]['userID'];
   if (databaseId !== userId) {
@@ -249,8 +247,6 @@ app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const userId = getUserByEmail(email, users);
   
-  console.log('password in login ', userId.password);
-  console.log('in log in userID ', userId);
   if (userId && bcrypt.compareSync(password, userId.password)) {
     req.session.user_id = userId.id;
     return res.redirect('/urls');

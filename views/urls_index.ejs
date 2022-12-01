@@ -36,7 +36,7 @@
               <td><%= id.shortURL %></td>
               <td><%= id.longURL %></td>
               <td><form method="POST" action="/urls/<%= id.shortURL %>/edit"><button type="submit" class="btn btn-outline-primary">Edit</button></form>
-              <td><form method="POST" action="/urls/<%= id.shortURL %>/delete">
+              <td><form method="POST" action="/urls/<%= id.shortURL %>?_method=DELETE">
                 <button type="submit" class="btn btn-outline-danger">Delete</button></form><td>
             </tr>
           <% } %>
