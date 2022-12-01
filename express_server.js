@@ -52,12 +52,10 @@ const users = {
   },
 };
 
-
-
-const hasUserId = (userId) => {
+const urlsForUser = (id) => {
   const urlArray = [];
   for (let element in urlDatabase) {
-    if (urlDatabase[element]['userID'] === userId) {
+    if (urlDatabase[element]['userID'] === id) {
       urlArray.push({shortURL:[element] ,longURL: urlDatabase[element]['longURL']});
     }
   }
@@ -94,7 +92,7 @@ app.get("/urls", (req, res) => {
     return res.redirect('/login');
   }
  
-  const templateVars = { urls: hasUserId(userId), user: users[userId] };
+  const templateVars = { urls: urlsForUser(userId), user: users[userId] };
   res.render("urls_index", templateVars);
 });
 
