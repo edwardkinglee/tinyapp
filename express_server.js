@@ -6,6 +6,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser');
+const getUserByEmail = require('./helpers');
 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -51,14 +52,7 @@ const users = {
   },
 };
 
-const getUserByEmail = (email, database) => {
-  for (let userId in database) {
-    if (database[userId]['email'] === email) {
-      return userId;
-    }
-  }
-  return null;
-};
+
 
 const hasUserId = (userId) => {
   const urlArray = [];
