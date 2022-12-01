@@ -248,11 +248,13 @@ app.post('/login', (req, res) => {
   const { email, password } = req.body;
   const userId = getUserByEmail(email, users);
   
-  if (userId && bcrypt.compareSync(password, users[userId].password)) {
-    req.session.user_id = userId;
+  console.log('password in login ', userId.password);
+  console.log('in log in userID ', userId);
+  if (userId && bcrypt.compareSync(password, userId.password)) {
+    req.session.user_id = userId.id;
     return res.redirect('/urls');
   }
-  if (userId && !bcrypt.compareSync(password, users[userId].password)) {
+  if (userId && !bcrypt.compareSync(password, userId.password)) {
     return res.status(403).send('Incorrect password');
   }
   return res.status(403).send('Email can\'t be found');
