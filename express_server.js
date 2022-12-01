@@ -6,7 +6,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 const bodyParser = require('body-parser');
-const getUserByEmail = require('./helpers');
+const {getUserByEmail, generateRandomString, urlsForUser} = require('./helpers');
 const methodOverride = require('method-override');
 
 app.set("view engine", "ejs");
@@ -17,20 +17,6 @@ app.use(cookieSession({
   keys: ['secret', 'rotation']
 }));
 app.use(methodOverride('_method'));
-
-
-const generateRandomString = () => {
-  const length = 6;
-  let result = '';
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  const charactersLength = characters.length;
-
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-
-  return result;
-};
 
 const urlDatabase = {
   b6UTxQ: {
@@ -56,21 +42,6 @@ const users = {
   },
 };
 
-const urlsForUser = (id) => {
-  const urlArray = [];
-  for (let element in urlDatabase) {
-    if (urlDatabase[element]['userID'] === id) {
-      urlArray.push({shortURL:[element] ,longURL: urlDatabase[element]['longURL']});
-    }
-  }
-  
-  if (urlArray.length === 0) {
-    return null;
-  }
-
-  return urlArray;
-};
-
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -92,7 +63,7 @@ app.get("/urls", (req, res) => {
     return res.redirect('/login');
   }
  
-  const templateVars = { urls: urlsForUser(userId), user: users[userId] };
+  const templateVars = { urls: urlsForUser(userId, urlDatabase), user: users[userId] };
   res.render("urls_index", templateVars);
 });
 
