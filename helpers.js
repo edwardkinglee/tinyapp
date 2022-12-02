@@ -27,7 +27,11 @@ const urlsForUser = (id, urlDatabase) => {
   
   for (let element in urlDatabase) {
     if (urlDatabase[element]['userID'] === id) {
-      urlArray.push({shortURL:[element] ,longURL: urlDatabase[element]['longURL']});
+      urlArray.push({
+        shortURL:[element] ,
+        longURL: urlDatabase[element]['longURL'],
+        visits: urlDatabase[element]['visits']
+      });
     }
   }
   

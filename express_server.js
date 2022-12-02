@@ -79,6 +79,7 @@ app.get("/register", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   let userEmail = '';
+ 
   if (users[userId]) {
     userEmail = users[userId]['email'];
   }
@@ -91,17 +92,37 @@ app.get("/urls/:id", (req, res) => {
   if (databaseId !== userId) {
     return res.status(400).send('You must be logged as a authorized user');
   }
-
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id]['longURL'], user: users[req.session.user_id] };
+  const shortURL = req.params.id;
+  const templateVars = { id: shortURL, longURL: urlDatabase[shortURL]['longURL'], user: users[userId], visits: urlDatabase[shortURL]['visits'], uniqueVisitors: urlDatabase[shortURL]['uniqueVisitors'], visitors: urlDatabase[shortURL]['visitors']};
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   let longURL = urlDatabase[req.params.id];
+  let time = Date.now();
+  let formatDate = new Date(time).toLocaleString();
+
+  //check for session.visitorId or generate one of one doesn't exist
+  if (!req.session.visitorId) {
+    req.session.visitorId = generateRandomString();
+  }
 
   if (!longURL) {
     return res.status(400).send('Short URL id doesn\'t exist');
   }
+  //add +1 to overall visits counter
+  urlDatabase[req.params.id].visits += 1;
+  //vistorsArray for the short URL
+  const vistorsArray = urlDatabase[req.params.id].visitors;
+  
+  //check vistorsArray to see if visitorId exists
+  const findVisitor = vistorsArray.find(visitor => visitor.visitorId === req.session.visitorId);
+  
+  if (!findVisitor) {
+    urlDatabase[req.params.id].uniqueVisitors += 1;
+  }
+  //push all visitors to visitor array with a VisitorId and time object
+  urlDatabase[req.params.id].visitors.push({visitorId: req.session.visitorId, time: formatDate});
 
   longURL = urlDatabase[req.params.id]['longURL'];
   res.redirect(longURL);
@@ -134,7 +155,10 @@ app.post("/urls", (req, res) => {
 
   urlDatabase[randomString] = {
     longURL: req.body['longURL'],
-    userID: req.session["user_id"]
+    userID: req.session["user_id"],
+    visits: 0,
+    uniqueVisitors: 0,
+    visitors: []
   };
   res.redirect(`/urls/${randomString}`);
 });
@@ -184,7 +208,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  req.session = null;
+  req.session.user_id = null;
   res.redirect('/login');
 });
 

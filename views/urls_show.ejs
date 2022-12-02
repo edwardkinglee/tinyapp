@@ -20,6 +20,12 @@
         <p class="card-text">
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
+        <p class="card-text">
+          Number Of Visits: <%= visits %>
+        </p>
+        <p class="card-text">
+          Number Of Unique Visitors: <%= uniqueVisitors %>
+        </p>
       </div>
       <div class="card-footer text-muted">
         <h3>Edit</h3>
@@ -29,6 +35,23 @@
           <button type="submit" class="btn btn-primary btn-lg">Submit</button>
       </div>
     </div>
+    <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Visitor Id</th>
+        <th scope="col">Visit Time</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if(visitors.length){ %>
+        <% for (let visits of visitors) { %>
+          <tr>
+            <td><%= visits.visitorId %></td><td><%= visits.time %></td>
+          </tr>
+        <% } %>
+      <% } %>
+        </tbody>
+      </table>
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
