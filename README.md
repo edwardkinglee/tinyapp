@@ -6,9 +6,9 @@ TinyApp is a full stack web application built with Node and Express that allows 
 
 !["Registration Page"](https://github.com/edwardkinglee/tinyapp/blob/master/images/index.png)
 !["Login Page"](https://github.com/edwardkinglee/tinyapp/blob/master/images/login.png)
-!["Url Index Page"](./images/myurls.png)
+!["Url Index Page"](https://github.com/edwardkinglee/tinyapp/blob/master/images/myurls.png)
 !["Create New Url Page"](https://github.com/edwardkinglee/tinyapp/blob/master/images/url.png)
-!["Edit"](./images/edit.png)
+!["Edit"](https://github.com/edwardkinglee/tinyapp/blob/master/images/edit.png)
 ## Dependencies
 
 - Node.js
